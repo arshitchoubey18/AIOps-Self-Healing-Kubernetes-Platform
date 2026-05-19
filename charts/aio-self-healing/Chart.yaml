@@ -1,0 +1,7 @@
+apiVersion: v2
+name: aio-self-healing
+description: AIOps self-healing Kubernetes platform services
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+

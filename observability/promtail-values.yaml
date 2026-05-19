@@ -1,0 +1,27 @@
+config:
+  clients:
+    - url: http://loki-gateway/loki/api/v1/push
+  snippets:
+    pipelineStages:
+      - cri: {}
+    scrapeConfigs: |
+      - job_name: aiops-pods
+        pipeline_stages:
+          - cri: {}
+        static_configs:
+          - targets:
+              - localhost
+            labels:
+              job: aiops-pods
+              namespace: aiops
+              __path__: /var/log/pods/aiops_*/*/*.log
+initContainer:
+  - name: init-inotify-limits
+    image: docker.io/busybox:1.36
+    imagePullPolicy: IfNotPresent
+    command:
+      - sh
+      - -c
+      - sysctl -w fs.inotify.max_user_instances=512 fs.inotify.max_user_watches=1048576
+    securityContext:
+      privileged: true

@@ -1,0 +1,36 @@
+{{- if .Values.healerController.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "aio.fullname" . }}-healer-controller
+  namespace: {{ .Values.namespace.name }}
+spec:
+  replicas: {{ .Values.healerController.replicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "aio.fullname" . }}-healer-controller
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "aio.fullname" . }}-healer-controller
+    spec:
+      serviceAccountName: {{ include "aio.fullname" . }}
+      containers:
+        - name: healer-controller
+          image: {{ include "aio.image" (dict "Values" .Values "repository" .Values.healerController.image.repository) }}
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          env:
+            {{- range $key, $value := .Values.healerController.env }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+            - name: GITHUB_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.existingSecret }}
+                  key: GITHUB_TOKEN
+                  optional: true
+          resources:
+            {{- toYaml .Values.healerController.resources | nindent 12 }}
+{{- end }}
+

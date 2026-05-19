@@ -1,0 +1,57 @@
+{{- if .Values.aiAgent.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "aio.fullname" . }}-ai-agent
+  namespace: {{ .Values.namespace.name }}
+spec:
+  replicas: {{ .Values.aiAgent.replicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "aio.fullname" . }}-ai-agent
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "aio.fullname" . }}-ai-agent
+    spec:
+      serviceAccountName: {{ include "aio.fullname" . }}
+      containers:
+        - name: ai-agent
+          image: {{ include "aio.image" (dict "Values" .Values "repository" .Values.aiAgent.image.repository) }}
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          ports:
+            - containerPort: 8080
+          env:
+            {{- range $key, $value := .Values.aiAgent.env }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          resources:
+            {{- toYaml .Values.aiAgent.resources | nindent 12 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "aio.fullname" . }}-ai-agent
+  namespace: {{ .Values.namespace.name }}
+spec:
+  selector:
+    app.kubernetes.io/name: {{ include "aio.fullname" . }}-ai-agent
+  ports:
+    - name: http
+      port: {{ .Values.aiAgent.service.port }}
+      targetPort: 8080
+{{- end }}
+

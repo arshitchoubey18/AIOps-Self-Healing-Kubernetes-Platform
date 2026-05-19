@@ -1,0 +1,77 @@
+global:
+  imageRegistry: ghcr.io/replace-owner/aiops-self-healing
+  imageTag: dev
+  imagePullPolicy: IfNotPresent
+
+namespace:
+  create: false
+  name: aiops
+
+secrets:
+  existingSecret: aiops-secrets
+
+aiAgent:
+  enabled: true
+  replicas: 1
+  image:
+    repository: ai-agent
+  service:
+    port: 8080
+  env:
+    OLLAMA_BASE_URL: http://ollama:11434
+    OLLAMA_MODEL: smollm2:135m
+    OLLAMA_TIMEOUT_SECONDS: "240"
+  resources:
+    requests:
+      cpu: 25m
+      memory: 128Mi
+    limits:
+      cpu: 250m
+      memory: 512Mi
+
+healerController:
+  enabled: true
+  replicas: 1
+  image:
+    repository: healer-controller
+  env:
+    POLL_INTERVAL_SECONDS: "30"
+    AI_AGENT_URL: http://aio-self-healing-ai-agent:8080
+    HEALING_MODE: dry-run
+    CRASHLOOP_ACTION: rollback
+    WATCH_NAMESPACES: default,demo
+    GITHUB_REPOSITORY: replace-owner/replace-repo
+  resources:
+    requests:
+      cpu: 25m
+      memory: 128Mi
+    limits:
+      cpu: 250m
+      memory: 512Mi
+
+discordBot:
+  enabled: false
+  replicas: 1
+  image:
+    repository: discord-bot
+  env:
+    AI_AGENT_URL: http://aio-self-healing-ai-agent:8080
+  resources:
+    requests:
+      cpu: 10m
+      memory: 128Mi
+    limits:
+      cpu: 250m
+      memory: 256Mi
+
+ollama:
+  enabled: true
+  image: ollama/ollama:0.5.4
+  model: smollm2:135m
+  resources:
+    requests:
+      cpu: 100m
+      memory: 768Mi
+    limits:
+      cpu: "1"
+      memory: 3Gi

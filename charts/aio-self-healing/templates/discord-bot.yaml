@@ -1,0 +1,35 @@
+{{- if .Values.discordBot.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "aio.fullname" . }}-discord-bot
+  namespace: {{ .Values.namespace.name }}
+spec:
+  replicas: {{ .Values.discordBot.replicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "aio.fullname" . }}-discord-bot
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "aio.fullname" . }}-discord-bot
+    spec:
+      serviceAccountName: {{ include "aio.fullname" . }}
+      containers:
+        - name: discord-bot
+          image: {{ include "aio.image" (dict "Values" .Values "repository" .Values.discordBot.image.repository) }}
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          env:
+            {{- range $key, $value := .Values.discordBot.env }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+            - name: DISCORD_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.existingSecret }}
+                  key: DISCORD_TOKEN
+          resources:
+            {{- toYaml .Values.discordBot.resources | nindent 12 }}
+{{- end }}
+
