@@ -1,6 +1,6 @@
 global:
   imageRegistry: ghcr.io/arshitchoubey18/aiops-self-healing-kubernetes-platform
-  imageTag: 56cb18e889cff4629d14e06500ad61b026af86a3
+  imageTag: 2761391cfa5df89879a40f6a4289dae4651b748b
   imagePullPolicy: IfNotPresent
 namespace:
   create: false
