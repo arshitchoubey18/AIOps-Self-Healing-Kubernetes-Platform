@@ -1,5 +1,5 @@
 global:
-  imageRegistry: ghcr.io/replace-owner/aiops-self-healing
+  imageRegistry: ghcr.io/arshitchoubey18/aiops-self-healing
   imageTag: dev
   imagePullPolicy: IfNotPresent
 
@@ -19,8 +19,8 @@ aiAgent:
     port: 8080
   env:
     OLLAMA_BASE_URL: http://ollama:11434
-    OLLAMA_MODEL: smollm2:135m
-    OLLAMA_TIMEOUT_SECONDS: "240"
+    OLLAMA_MODEL: qwen2.5:0.5b-instruct-q4_0
+    OLLAMA_TIMEOUT_SECONDS: "600"
   resources:
     requests:
       cpu: 25m
@@ -40,7 +40,7 @@ healerController:
     HEALING_MODE: dry-run
     CRASHLOOP_ACTION: rollback
     WATCH_NAMESPACES: default,demo
-    GITHUB_REPOSITORY: replace-owner/replace-repo
+    GITHUB_REPOSITORY: arshitchoubey18/AIOps-Self-Healing-Kubernetes-Platform
   resources:
     requests:
       cpu: 25m
@@ -67,7 +67,7 @@ discordBot:
 ollama:
   enabled: true
   image: ollama/ollama:0.5.4
-  model: smollm2:135m
+  model: qwen2.5:0.5b-instruct-q4_0
   resources:
     requests:
       cpu: 100m
