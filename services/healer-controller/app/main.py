@@ -1,13 +1,12 @@
 import os
 import time
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import httpx
 from github import Github
 from kubernetes import client, config
 from kubernetes.client import ApiException
-
 
 POLL_INTERVAL_SECONDS = int(os.getenv("POLL_INTERVAL_SECONDS", "30"))
 AI_AGENT_URL = os.getenv("AI_AGENT_URL", "http://aio-self-healing-ai-agent:8080")
@@ -285,7 +284,7 @@ def format_list(values: list[str]) -> str:
 
 
 def timestamp() -> str:
-    return datetime.now(timezone.utc).isoformat()
+    return datetime.now(UTC).isoformat()
 
 
 if __name__ == "__main__":

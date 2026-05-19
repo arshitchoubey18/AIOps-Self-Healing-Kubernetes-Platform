@@ -6,7 +6,6 @@ import httpx
 from fastapi import FastAPI
 from pydantic import BaseModel, Field
 
-
 OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://ollama:11434")
 OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "smollm2:135m")
 OLLAMA_TIMEOUT_SECONDS = float(os.getenv("OLLAMA_TIMEOUT_SECONDS", "240"))

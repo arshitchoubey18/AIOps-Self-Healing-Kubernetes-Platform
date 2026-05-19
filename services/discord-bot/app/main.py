@@ -5,7 +5,6 @@ import httpx
 from discord.ext import commands
 from kubernetes import client, config
 
-
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN", "")
 AI_AGENT_URL = os.getenv("AI_AGENT_URL", "http://aio-self-healing-ai-agent:8080")
 HEALER_SERVICE_URL = os.getenv("HEALER_SERVICE_URL", "")
@@ -38,10 +37,7 @@ async def health(ctx: commands.Context) -> None:
 async def pods(ctx: commands.Context, namespace: str = "default") -> None:
     core = client.CoreV1Api()
     items = core.list_namespaced_pod(namespace=namespace).items
-    lines = [
-        f"{pod.metadata.name}: {pod.status.phase}"
-        for pod in items[:20]
-    ]
+    lines = [f"{pod.metadata.name}: {pod.status.phase}" for pod in items[:20]]
     await ctx.reply("```text\n" + ("\n".join(lines) or "No pods found.") + "\n```")
 
 
@@ -86,4 +82,3 @@ if __name__ == "__main__":
         raise RuntimeError("DISCORD_TOKEN is required")
     load_kube_config()
     bot.run(DISCORD_TOKEN)
-
