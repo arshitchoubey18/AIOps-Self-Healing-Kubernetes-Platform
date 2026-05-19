@@ -1,15 +1,12 @@
 global:
-  imageRegistry: ghcr.io/arshitchoubey18/aiops-self-healing
-  imageTag: dev
+  imageRegistry: ghcr.io/arshitchoubey18/aiops-self-healing-kubernetes-platform
+  imageTag: 56cb18e889cff4629d14e06500ad61b026af86a3
   imagePullPolicy: IfNotPresent
-
 namespace:
   create: false
   name: aiops
-
 secrets:
   existingSecret: aiops-secrets
-
 aiAgent:
   enabled: true
   replicas: 1
@@ -28,7 +25,6 @@ aiAgent:
     limits:
       cpu: 250m
       memory: 512Mi
-
 healerController:
   enabled: true
   replicas: 1
@@ -48,7 +44,6 @@ healerController:
     limits:
       cpu: 250m
       memory: 512Mi
-
 discordBot:
   enabled: false
   replicas: 1
@@ -63,7 +58,6 @@ discordBot:
     limits:
       cpu: 250m
       memory: 256Mi
-
 ollama:
   enabled: true
   image: ollama/ollama:0.5.4
